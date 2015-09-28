@@ -20,13 +20,18 @@ namespace NHibirnateExample
             sess.BeginTransaction();
             try
             {
+                var category = new Category
+                {
+                    DisplayName = "Game"
+                };
+
                 var product = new Product
                 {
                     Name = "Minesweeper",
-                    Price = 300,
-                    Category = "Game"
+                    Price = 300
                 };
-                sess.Save(product);
+                category.AddProduct(product);
+                sess.SaveOrUpdate(product);
 
                 sess.Transaction.Commit();
             }
