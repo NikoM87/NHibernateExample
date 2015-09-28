@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NHibirnateExample
+namespace NHibirnateExample.Domain
 {
     public class Product
     {
