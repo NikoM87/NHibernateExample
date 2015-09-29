@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using NHibernate.Criterion;
 using NHibirnateExample.Domain;
+using Order = NHibirnateExample.Domain.Order;
 
 namespace NHibirnateExample
 {
@@ -24,13 +26,19 @@ namespace NHibirnateExample
                     DisplayName = "Game"
                 };
 
-                var product = new Product
+                category.AddProduct(new Product
                 {
                     Name = "Minesweeper",
                     Price = 300
-                };
-                category.AddProduct(product);
-                sess.SaveOrUpdate(product);
+                });
+
+                category.AddProduct(new Product
+                {
+                    Name = "Pinball",
+                    Price = 500
+                });
+
+                sess.SaveOrUpdate(category);
 
                 sess.Transaction.Commit();
             }
@@ -68,6 +76,15 @@ namespace NHibirnateExample
             catch
             {
                 sess.Transaction.Rollback();
+            }
+
+            var criteria = NHibernateApp.CurrentSession().CreateCriteria<Product>();
+            criteria.Add(Restrictions.Between("Price", 200, 400));
+
+            var result = criteria.List<Product>();
+            foreach (var product in result)
+            {
+                richTextBox1.Text += product + Environment.NewLine;
             }
         }
     }
