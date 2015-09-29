@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
@@ -23,19 +22,22 @@ namespace NHibirnateExample
                     .UsingFile(DataBaseFile)
                     .ShowSql()
                 )
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Product>())
+                .Mappings(
+                    m => m.FluentMappings
+                        .AddFromAssemblyOf<Product>()
+                        .AddFromAssemblyOf<Category>()
+                        .AddFromAssemblyOf<Order>()
+                )
                 .ExposeConfiguration(BuildSchema)
                 .BuildSessionFactory();
         }
 
         private static void BuildSchema(Configuration config)
         {
-            if (!File.Exists(DataBaseFile))
+            //if (!File.Exists(DataBaseFile))
             {
-                // this NHibernate tool takes a configuration (with mapping info in)
-                // and exports a database schema from it
                 new SchemaExport(config)
-                    .Create(false, true);
+                    .Create(true, true);
             }
         }
 
