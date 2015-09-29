@@ -4,30 +4,24 @@ using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
-using NHibirnateExample.Domain;
 
 namespace NHibirnateExample
 {
     public static class NHibernateApp
     {
         private const string DataBaseFile = "SQLite.db";
-        private static readonly ISessionFactory SessionFactory = CreateFluentSessionFactory();
+        private static readonly ISessionFactory SessionFactory = CreateAutoMappingSessionFactory();
 
         [ThreadStatic] private static ISession _currentSession;
 
-        internal static ISessionFactory CreateFluentSessionFactory()
+        internal static ISessionFactory CreateAutoMappingSessionFactory()
         {
             return Fluently.Configure().Database(
                 SQLiteConfiguration.Standard
                     .UsingFile(DataBaseFile)
                     .ShowSql()
                 )
-                .Mappings(
-                    m => m.FluentMappings
-                        .AddFromAssemblyOf<Product>()
-                        .AddFromAssemblyOf<Category>()
-                        .AddFromAssemblyOf<Order>()
-                )
+                .Mappings(m => m.AutoMappings.Add(new ModelGenerator().Generate()))
                 .ExposeConfiguration(BuildSchema)
                 .BuildSessionFactory();
         }
@@ -39,13 +33,6 @@ namespace NHibirnateExample
                 new SchemaExport(config)
                     .Create(true, true);
             }
-        }
-
-        internal static ISessionFactory CreateXmlSessionFactory()
-        {
-            var cfg = new Configuration().Configure().AddAssembly(typeof (Product).Assembly);
-            new SchemaExport(cfg).Create(true, true);
-            return cfg.BuildSessionFactory();
         }
 
         public static ISession CurrentSession()

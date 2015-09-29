@@ -1,17 +1,14 @@
-using FluentNHibernate.Mapping;
+using FluentNHibernate.Automapping;
+using FluentNHibernate.Automapping.Alterations;
 using NHibirnateExample.Domain;
 
 namespace NHibirnateExample.Mapping
 {
-    public class OrderMap : ClassMap<Order>
+    public class OrderMap : IAutoMappingOverride<Order>
     {
-        public OrderMap()
+        public void Override(AutoMapping<Order> mapping)
         {
-            Table("Orders");
-            Id(x => x.Id).GeneratedBy.Native();
-            Map(x => x.NumberOfItems).Column("NumberOfItems");
-            Map(x => x.Customer).Column("Customer");
-            References(x => x.Product, ProductMap.ProductIdField);
+            mapping.References(x => x.Product, ProductMap.ProductIdField);
         }
     }
 }

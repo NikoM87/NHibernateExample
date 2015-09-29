@@ -1,19 +1,17 @@
-﻿using FluentNHibernate.Mapping;
+﻿using FluentNHibernate.Automapping;
+using FluentNHibernate.Automapping.Alterations;
+using FluentNHibernate.Mapping;
 using NHibirnateExample.Domain;
 
 namespace NHibirnateExample.Mapping
 {
-    public class ProductMap : ClassMap<Product>
+    public class ProductMap : IAutoMappingOverride<Product>
     {
         public const string ProductIdField = "ProductId";
 
-        public ProductMap()
+        public void Override(AutoMapping<Product> mapping)
         {
-            Table("Products");
-            Id(x => x.Id).GeneratedBy.Native();
-            Map(x => x.Name);
-            Map(x => x.Price);
-            HasManyToMany(x => x.Categories)
+            mapping.HasManyToMany(x => x.Categories)
                 .Table(CategoryMap.ProductsCategoryTable)
                 .ParentKeyColumn(ProductIdField)
                 .ChildKeyColumn(CategoryMap.CategoryIdField)
@@ -21,7 +19,7 @@ namespace NHibirnateExample.Mapping
                 .Cascade.SaveUpdate()
                 .AsSet()
                 .Inverse();
-            HasMany(x => x.Orders)
+            mapping.HasMany(x => x.Orders)
                 .KeyColumn(ProductIdField)
                 .Cascade.AllDeleteOrphan()
                 .Inverse();

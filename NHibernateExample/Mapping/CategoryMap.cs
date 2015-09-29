@@ -1,19 +1,18 @@
+using FluentNHibernate.Automapping;
+using FluentNHibernate.Automapping.Alterations;
 using FluentNHibernate.Mapping;
 using NHibirnateExample.Domain;
 
 namespace NHibirnateExample.Mapping
 {
-    public class CategoryMap : ClassMap<Category>
+    public class CategoryMap : IAutoMappingOverride<Category>
     {
         public const string CategoryIdField = "CategoryId";
         public const string ProductsCategoryTable = "[Products.Categories]";
 
-        public CategoryMap()
+        public void Override(AutoMapping<Category> mapping)
         {
-            Table("Category");
-            Id(x => x.Id).GeneratedBy.Native();
-            Map(x => x.DisplayName);
-            HasManyToMany(x => x.Products)
+            mapping.HasManyToMany(x => x.Products)
                 .Access.LowerCaseField(Prefix.Underscore)
                 .Table(ProductsCategoryTable)
                 .ParentKeyColumn(CategoryIdField)
