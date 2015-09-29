@@ -14,7 +14,7 @@ namespace NHibirnateExample.Mapping
             Map(x => x.Name);
             Map(x => x.Price);
             HasManyToMany(x => x.Categories)
-                .Table("ProductsCategories")
+                .Table(CategoryMap.ProductsCategoryTable)
                 .ParentKeyColumn(ProductIdField)
                 .ChildKeyColumn(CategoryMap.CategoryIdField)
                 .Access.LowerCaseField(Prefix.Underscore)
@@ -23,8 +23,8 @@ namespace NHibirnateExample.Mapping
                 .Inverse();
             HasMany(x => x.Orders)
                 .KeyColumn(ProductIdField)
-                .Inverse()
-                .Cascade.AllDeleteOrphan();
+                .Cascade.AllDeleteOrphan()
+                .Inverse();
         }
     }
 }

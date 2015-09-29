@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Forms;
 using NHibirnateExample.Domain;
 
@@ -40,17 +39,35 @@ namespace NHibirnateExample
                 sess.Transaction.Rollback();
             }
 
+            sess.BeginTransaction();
             try
             {
-                var q = NHibernateApp.CurrentSession().CreateCriteria<Product>();
-                var list = q.List<Product>();
-
-                foreach (var p in list.ToList())
-                    richTextBox1.Text += p + Environment.NewLine;
+                var product = NHibernateApp.CurrentSession().Get<Product>(1);
+                var order = new Order(product)
+                {
+                    NumberOfItems = 5,
+                    Customer = "Shop"
+                };
+                NHibernateApp.CurrentSession().SaveOrUpdate(product);
+                sess.Transaction.Commit();
             }
             catch
             {
-                //
+                sess.Transaction.Rollback();
+            }
+
+            sess.BeginTransaction();
+            try
+            {
+                var product = NHibernateApp.CurrentSession().Get<Product>(1);
+                product.Orders.Clear();
+
+                NHibernateApp.CurrentSession().SaveOrUpdate(product);
+                sess.Transaction.Commit();
+            }
+            catch
+            {
+                sess.Transaction.Rollback();
             }
         }
     }

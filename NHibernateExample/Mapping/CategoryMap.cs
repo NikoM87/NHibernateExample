@@ -6,6 +6,7 @@ namespace NHibirnateExample.Mapping
     public class CategoryMap : ClassMap<Category>
     {
         public const string CategoryIdField = "CategoryId";
+        public const string ProductsCategoryTable = "[Products.Categories]";
 
         public CategoryMap()
         {
@@ -14,7 +15,7 @@ namespace NHibirnateExample.Mapping
             Map(x => x.DisplayName);
             HasManyToMany(x => x.Products)
                 .Access.LowerCaseField(Prefix.Underscore)
-                .Table("ProductsCategories")
+                .Table(ProductsCategoryTable)
                 .ParentKeyColumn(CategoryIdField)
                 .ChildKeyColumn(ProductMap.ProductIdField)
                 .Cascade.SaveUpdate()
